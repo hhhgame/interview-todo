@@ -1,0 +1,21 @@
+{
+  "kind": "collectionType",
+  "collectionName": "todo_comments",
+  "info": {
+    "singularName": "todo-comment",
+    "pluralName": "todo-comments",
+    "displayName": "TodoComment"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "todoID": {
+      "type": "biginteger"
+    },
+    "comment": {
+      "type": "text"
+    }
+  }
+}
