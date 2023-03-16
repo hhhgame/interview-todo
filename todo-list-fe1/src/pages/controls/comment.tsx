@@ -18,11 +18,10 @@ const Comment: FC<Props> = (props) => {
   const {data, error, loading, run} = useRequest(getTodoComment, {
     manual: true,
     onSuccess: (data) => {
-      console.log(data, 'data')
       setComments(data.list.map((item:TodoComment) => {
         return {
           comment: item.comment,
-          todoId: item.todoID
+          todoId: item.todo_id
         }
       }))
       // setTodos(data.list)
@@ -63,7 +62,7 @@ const Comment: FC<Props> = (props) => {
   useEffect(() => {
     if (todoId !== undefined)
       run(todoId)
-    getUserRun()
+    // getUserRun()
   }, [todoId])
   useEffect(() => {
     setIsModalOpen(props.isOpen)
@@ -74,7 +73,7 @@ const Comment: FC<Props> = (props) => {
   const handleOk = () => {
     runAddTodoComment({
       comment: comment,
-      todoID: todoId
+      todo_id: todoId
     })
   }
   const handleCancel = () => {
@@ -110,7 +109,16 @@ const Comment: FC<Props> = (props) => {
         />
         <Mentions
           style={{ width: '100%' }}
-          options={users}
+          options={[
+            {
+              value: 'user1',
+              label: 'user1',
+            },
+            {
+              value: 'user2',
+              label: 'user2',
+            }
+          ]}
           value={comment}
           onChange={onChange}
           onSelect={onSelect}

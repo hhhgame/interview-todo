@@ -14,6 +14,9 @@ import {
   CommentOutlined
 } from '@ant-design/icons'
 import Comment from './controls/comment'
+
+import { Cheader } from "./todo.style";
+
 const { RangePicker } = DatePicker
 dayjs.extend(utc)
 function Todo() {
@@ -38,37 +41,37 @@ function Todo() {
     },
     {
       title: '计划完成时间',
-      dataIndex: 'scheduleCompleteTime',
-      key: 'scheduleCompleteTime',
+      dataIndex: 'schedule_complete_time',
+      key: 'schedule_complete_time',
       sorter: {
         compare: (a, b) => {
-          console.log(dayjs(a.scheduleCompleteTime!).valueOf())
-          return dayjs(a.scheduleCompleteTime!).valueOf() - dayjs(b.scheduleCompleteTime!).valueOf()
+          console.log(dayjs(a.schedule_complete_time!).valueOf())
+          return dayjs(a.schedule_complete_time!).valueOf() - dayjs(b.schedule_complete_time!).valueOf()
         },
         multiple: 2,
       },
       render: (_, record) => {
-        return (<div>{dayjs(record.scheduleCompleteTime).format('YYYY-MM-DD HH:mm:ss')}</div>)
+        return (<div>{dayjs(record.schedule_complete_time).format('YYYY-MM-DD HH:mm:ss')}</div>)
       }
     },
     {
       title: '创建时间',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
+      dataIndex: 'created_at',
+      key: 'created_at',
       sorter: {
-        compare: (a, b) => dayjs(a.createdAt!).valueOf() - dayjs(b.createdAt!).valueOf(),
+        compare: (a, b) => dayjs(a.created_at!).valueOf() - dayjs(b.created_at!).valueOf(),
         multiple: 1,
       },
       render: (_, record) => {
-        return (<div>{dayjs(record.createdAt).format('YYYY-MM-DD HH:mm:ss')}</div>)
+        return (<div>{dayjs(record.created_at).format('YYYY-MM-DD HH:mm:ss')}</div>)
       }
     },
     {
       title: '更新时间',
-      dataIndex: 'updatedAt',
-      key: 'updatedAt',
+      dataIndex: 'updated_at',
+      key: 'updated_at',
       render: (_, record) => {
-        return (<div>{dayjs(record.updatedAt).format('YYYY-MM-DD HH:mm:ss')}</div>)
+        return (<div>{dayjs(record.updated_at).format('YYYY-MM-DD HH:mm:ss')}</div>)
       }
     },
     {
@@ -97,7 +100,7 @@ function Todo() {
   const [ todos, setTodos ] = useState<any>([])
   const [currentPage, setCurrentPage] = useState(1)
   const [total, setTotal] = useState(0)
-  const [pageSize, setPageSize] = useState(5)
+  const [pageSize, setPageSize] = useState(1)
   const [pagination, setPagination] = useState<PaginationProps>({
     defaultCurrent: 1,
     total: 0,
@@ -111,28 +114,14 @@ function Todo() {
     onSuccess: (data) => {
       setTodos(data.list)
       setTotal(data.pagination.total || 0)
-      // setPagination({
-      //   current: data.pagination.page,
-      //   total: data.pagination.total,
-      //   pageSize: data.pagination.pageSize
-      // })
     }
   });
-
-  const getPagination = () => {
-    const pagi = {
-      page: pagination.current,
-      pageSize: pagination.pageSize || 0,
-      total: pagination.total
-    }
-    return pagi
-  }
 
   const { data: addTodoRes, error: addTodoError, loading: addOrUpdateTodoLoading, run: runAddOrUpdateTodo } = useRequest(addOrUpdateTodo, {
     manual: true,
     onSuccess: (data) => {
       setIsOpen(false)
-      run({ pagination: { page: currentPage, pageSize: pageSize } })
+      run({ filters: {}, pagination: { page: currentPage, pageSize: pageSize } })
     }
   });
 
@@ -140,7 +129,7 @@ function Todo() {
     manual: true,
     onSuccess: (data) => {
       setIsOpen(false)
-      run({ pagination: { page: currentPage, pageSize: pageSize } })
+      run({ filters: {}, pagination: { page: currentPage, pageSize: pageSize } })
     }
   });
 
@@ -148,39 +137,34 @@ function Todo() {
     manual: true,
     onSuccess: (data) => {
       setIsOpen(false)
-      run({ pagination: { page: currentPage, pageSize: pageSize } })
+      run({filters: {}, pagination: { page: currentPage, pageSize: pageSize } })
     }
   });
 
   useEffect(() => {
-    const filters = {
-      // content: {
-      //   $eq: '区恶趣味',
-      // },
-    }
+    const filters = {}
     run({ filters, pagination: { page: currentPage, pageSize: pageSize } })
   }, [currentPage, pageSize])
   const addTodo = () => {
     setTodoItem({
       content: '',
-      scheduleCompleteTime: ''
+      schedule_complete_time: ''
     })
     form.setFieldsValue({
       todo: '',
-      scheduleCompleteTime: dayjs()
+      schedule_complete_time: dayjs()
     })
     setIsOpen(true)
   }
   const handleOk = () => {
     formRef.current?.validateFields().then((isValid) => {
-      console.log('isValid', isValid)
       if (!isValid) {
         return
       }
       const formValue = formRef.current?.getFieldsValue()
       let todo: TodoItem = {
         content: formValue.todo,
-        scheduleCompleteTime: formValue.scheduleCompleteTime,
+        schedule_complete_time: formValue.schedule_complete_time,
         id: todoItem?.id
       }
       if (todoItem?.id) {
@@ -210,7 +194,7 @@ function Todo() {
     setTodoItem(record)
     form.setFieldsValue({
       todo: record.content,
-      scheduleCompleteTime: dayjs(record.scheduleCompleteTime),
+      schedule_complete_time: dayjs(record.schedule_complete_time),
       id: record.id
     })
     setIsOpen(true)
@@ -236,27 +220,27 @@ function Todo() {
   const onFilterFinish = (values: any) => {
     console.log('Success:', values);
     let _filter: any = {}
-    if (values.scheduleCompleteTime) {
-      _filter['scheduleCompleteTime'] = {
+    if (values.schedule_complete_time) {
+      _filter['schedule_complete_time'] = {
         $between: [
-          dayjs.utc(values.scheduleCompleteTime[0]).format(),
-          dayjs.utc(values.scheduleCompleteTime[1]).format()
+          dayjs.utc(values.schedule_complete_time[0]).format(),
+          dayjs.utc(values.schedule_complete_time[1]).format()
         ]
       }
     }
-    if (values.createdAt) {
-      _filter['createdAt'] = {
+    if (values.created_at) {
+      _filter['created_at'] = {
         $between: [
-          dayjs.utc(values.createdAt[0]).format(),
-          dayjs.utc(values.createdAt[1]).format()
+          dayjs.utc(values.created_at[0]).format(),
+          dayjs.utc(values.created_at[1]).format()
         ]
       }
     }
-    if (values.updatedAt) {
-      _filter['updatedAt'] = {
+    if (values.updated_at) {
+      _filter['updated_at'] = {
         $between: [
-          dayjs.utc(values.updatedAt[0]).format(),
-          dayjs.utc(values.updatedAt[1]).format()
+          dayjs.utc(values.updated_at[0]).format(),
+          dayjs.utc(values.updated_at[1]).format()
         ]
       }
     }
@@ -275,13 +259,13 @@ function Todo() {
             style={{ maxWidth: '600px' }}
             onFinish={onFilterFinish}
           >
-            <Form.Item label="计划完成时间" name="scheduleCompleteTime">
+            <Form.Item label="计划完成时间" name="schedule_complete_time">
               <RangePicker showTime />
             </Form.Item>
-            <Form.Item label="创建时间" name="createdAt" >
+            <Form.Item label="创建时间" name="created_at" >
               <RangePicker showTime />
             </Form.Item>
-            <Form.Item label="更新时间" name="updatedAt">
+            <Form.Item label="更新时间" name="updated_at">
               <RangePicker showTime />
             </Form.Item>
             <Form.Item>
@@ -290,7 +274,7 @@ function Todo() {
           </Form>
           <Table rowKey={'id'} dataSource={ todos } columns={ columns } loading={ loading }
                  pagination={ { current: currentPage, total: total, pageSize: pageSize, onChange: onPageChange,
-                   showSizeChanger: true, pageSizeOptions: [5, 10, 20, 50]
+                   showSizeChanger: true, pageSizeOptions: [1, 5, 10, 20, 50]
                  } }
           />
         </Space>
@@ -318,7 +302,7 @@ function Todo() {
           </Form.Item>
           <Form.Item
             label="计划完成时间"
-            name="scheduleCompleteTime"
+            name="schedule_complete_time"
             rules={[{ required: true, message: '请选择计划完成时间' }]}
           >
             <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
